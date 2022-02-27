@@ -1,0 +1,17 @@
+server:
+  port: 8083
+spring:
+  application:
+    name: balanceWithMVCC
+  datasource:
+    password: password
+    url: jdbc:mysql://localhost:3306/balancewithmvcc
+    username: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        format_sql: false
+    show-sql: false

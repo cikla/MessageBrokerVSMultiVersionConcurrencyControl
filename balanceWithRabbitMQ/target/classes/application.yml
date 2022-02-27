@@ -1,0 +1,24 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: balanceWithRabbitMQ
+  datasource:
+    password: password
+    url: jdbc:mysql://localhost:3306/balancewithrabbitmq
+    username: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        format_sql: false
+    show-sql: false
+rabbitmq:
+  exchanges:
+    internal: internal.exchange
+  queue:
+    balance: balance.queue
+  routing-keys:
+    internal-balance: internal.balance.routing-key
