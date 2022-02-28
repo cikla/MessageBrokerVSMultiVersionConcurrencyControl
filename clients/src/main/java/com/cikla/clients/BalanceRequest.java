@@ -10,4 +10,5 @@ import lombok.*;
 @ToString
 public class BalanceRequest {
     private Double balance;
+    private Integer stock;
 }

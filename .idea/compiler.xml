@@ -10,6 +10,7 @@
         <module name="offer" />
         <module name="clients" />
         <module name="balanceWithRabbitMQ" />
+        <module name="balance" />
         <module name="balanceWithMVCC" />
         <module name="amqp" />
       </profile>

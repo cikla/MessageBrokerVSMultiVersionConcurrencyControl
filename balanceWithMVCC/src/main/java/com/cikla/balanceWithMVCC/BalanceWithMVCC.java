@@ -23,6 +23,7 @@ public class BalanceWithMVCC {
     )
     private Integer balanceWithMVCCId;
     private Double balance;
+    private Integer stock;
 
     @Version
     private Integer version;

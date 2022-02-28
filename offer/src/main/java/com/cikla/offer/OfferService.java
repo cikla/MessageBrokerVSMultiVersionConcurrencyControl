@@ -17,12 +17,12 @@ public class OfferService {
     private final BalanceWithMVCCClient balanceWithMVCCClient;
 
     public void approveOfferWithMVCC (Double amount){
-        BalanceRequest balanceRequest = new BalanceRequest().builder().balance(amount).build();
+        BalanceRequest balanceRequest = new BalanceRequest().builder().balance(amount).stock(1).build();
         balanceWithMVCCClient.changeBalance(balanceRequest);
     }
 
     public void approveOffer (Double amount){
-        BalanceRequest balanceRequest = new BalanceRequest().builder().balance(amount).build();
+        BalanceRequest balanceRequest = new BalanceRequest().builder().balance(amount).stock(1).build();
         rabbitMQMessageProducer.publish(balanceRequest,
                 "internal.exchange",
                 "internal.balance.routing-key");
