@@ -1,6 +1,8 @@
 package com.cikla.balanceWithMVCC;
 
 import lombok.*;
+import org.hibernate.annotations.OptimisticLockType;
+import org.hibernate.annotations.OptimisticLocking;
 
 import javax.persistence.*;
 

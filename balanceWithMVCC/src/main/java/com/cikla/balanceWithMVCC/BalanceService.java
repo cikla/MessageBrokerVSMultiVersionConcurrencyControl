@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -32,8 +33,10 @@ public class BalanceService {
 
     public boolean checkStockBeforeSave() {
         Optional<BalanceWithMVCC> balanceWithMVCCOptional = findFirstBalanceSe();
-        return (balanceWithMVCCOptional.get().getStock() < 499);
+        return (balanceWithMVCCOptional.get().getStock() < 999);
     }
+
+    @Transactional
     public void changeBalance(BalanceRequest balanceRequest) throws StockException{
         log.info("BalanceServiceMVCC started with request: {}", balanceRequest);
         Optional<BalanceWithMVCC> balanceWithMVCCOptional = findFirstBalanceSe();

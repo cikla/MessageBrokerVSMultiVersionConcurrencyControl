@@ -29,4 +29,12 @@ public class OfferController {
         offerService.approveOfferWithMVCC(randomValue);
 
     }
+
+    @GetMapping("/approveOfferWithMVCCTEMP")
+    public void approveOfferWithMVCCTEMP(){
+        double randomValue = offerService.randomDoubleGenerator();
+        log.info("Yeni ApproveOfferWithMVCCTEMP isteği bakiye değişikliği: {}", randomValue);
+        offerService.approveOfferWithMVCCTEMP(randomValue);
+
+    }
 }
