@@ -33,10 +33,9 @@ public class BalanceService {
 
     public boolean checkStockBeforeSave() {
         Optional<BalanceWithMVCC> balanceWithMVCCOptional = findFirstBalanceSe();
-        return (balanceWithMVCCOptional.get().getStock() < 999);
+        return (balanceWithMVCCOptional.get().getStock() <= 999);
     }
 
-    @Transactional
     public void changeBalance(BalanceRequest balanceRequest) throws StockException{
         log.info("BalanceServiceMVCC started with request: {}", balanceRequest);
         Optional<BalanceWithMVCC> balanceWithMVCCOptional = findFirstBalanceSe();
@@ -44,7 +43,10 @@ public class BalanceService {
         balanceWithMVCCOptional.get().setBalance(balanceRequest.getBalance()+balanceWithMVCCOptional.get().getBalance());
         balanceWithMVCCOptional.get().setStock(balanceRequest.getStock()+balanceWithMVCCOptional.get().getStock());
         try {
-            balanceRepository.save(balanceWithMVCCOptional.get());
+            if(checkStockBeforeSave())
+                balanceRepository.save(balanceWithMVCCOptional.get());
+            else
+                throw new StockException("Stok yok abi");
 
         }catch (Exception e){
             log.info("BalanceServiceMVCC OptimisticLocking catched : {}", 1);
