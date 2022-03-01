@@ -10,50 +10,63 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class BalanceService {
 
+    private final AtomicInteger count = new AtomicInteger();
     private final BalanceRepository balanceRepository;
+    private final PurchaseRepository purchaseRepository;
 
     public Optional<BalanceWithMVCC> findFirstBalance(){
         return balanceRepository.findById(1);
     }
 
-    public Optional<BalanceWithMVCC> findFirstBalanceSe(){
+    public Optional<BalanceWithMVCC> findFirstBalanceWithId(){
         Optional<BalanceWithMVCC> optionalBalanceWithRabbitMQ = findFirstBalance();
         return Optional.ofNullable(optionalBalanceWithRabbitMQ
                 .orElse(
                         BalanceWithMVCC.builder()
                                 .balance(0.0d)
+                                .stock(0)
                                 .build()));
     }
 
-    public boolean checkStockBeforeSave() {
-        Optional<BalanceWithMVCC> balanceWithMVCCOptional = findFirstBalanceSe();
+    public boolean checkStockBeforeSave(Optional<BalanceWithMVCC> balanceWithMVCCOptional) {
+        //Optional<BalanceWithMVCC> balanceWithMVCCOptional = findFirstBalanceWithId();
         return (balanceWithMVCCOptional.get().getStock() <= 999);
     }
 
-    public void changeBalance(BalanceRequest balanceRequest) throws StockException{
-        log.info("BalanceServiceMVCC started with request: {}", balanceRequest);
-        Optional<BalanceWithMVCC> balanceWithMVCCOptional = findFirstBalanceSe();
+    public void purchaseProccess(BalanceRequest balanceRequest){
+        Purchase purchase = Purchase.builder().stockCount(balanceRequest.getCount()).build();
+        purchaseRepository.save(purchase);
+    }
 
+    public void changeBalance(BalanceRequest balanceRequest) throws StockException{
+
+        if(balanceRequest.getCount() == null) balanceRequest.setCount(count.incrementAndGet());
+
+        //find one id=1
+        Optional<BalanceWithMVCC> balanceWithMVCCOptional = findFirstBalanceWithId();
+
+        //change entity object according to incoming request
         balanceWithMVCCOptional.get().setBalance(balanceRequest.getBalance()+balanceWithMVCCOptional.get().getBalance());
         balanceWithMVCCOptional.get().setStock(balanceRequest.getStock()+balanceWithMVCCOptional.get().getStock());
-        try {
-            if(checkStockBeforeSave())
-                balanceRepository.save(balanceWithMVCCOptional.get());
-            else
-                throw new StockException("Stok yok abi");
 
+        try {
+            if(checkStockBeforeSave(balanceWithMVCCOptional)) {
+                balanceRepository.save(balanceWithMVCCOptional.get());
+                purchaseProccess(balanceRequest);
+            }
         }catch (Exception e){
-            log.info("BalanceServiceMVCC OptimisticLocking catched : {}", 1);
-            if(checkStockBeforeSave())
+            log.info("BalanceServiceMVCC OptimisticLocking caught: {}", e.getMessage());
+            if(checkStockBeforeSave(balanceWithMVCCOptional))
                 changeBalance(balanceRequest);
             else
-                throw new StockException("Stok yok abi");
+                throw new StockException("Stok Kalmadı");
         }
     }
 }

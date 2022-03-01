@@ -7,6 +7,12 @@ spring:
     password: password
     url: jdbc:mysql://localhost:3306/balancewithmvcc
     username: root
+    hikari:
+      minimumIdle: 20
+      maximumPoolSize: 100
+      idleTimeout: 120000
+      connectionTimeout: 300000
+      leakDetectionThreshold: 300000
   jpa:
     hibernate:
       ddl-auto: update

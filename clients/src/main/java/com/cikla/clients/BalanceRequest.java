@@ -11,4 +11,5 @@ import lombok.*;
 public class BalanceRequest {
     private Double balance;
     private Integer stock;
+    private Integer count;
 }

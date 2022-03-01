@@ -8,4 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface BalanceWithMVCCClient {
     @PostMapping(path = "/api/v1/balancewithmvcc/changeBalance")
     void changeBalance(@RequestBody  BalanceRequest balanceRequest);
+
+
 }
